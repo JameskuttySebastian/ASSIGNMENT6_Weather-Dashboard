@@ -1,0 +1,75 @@
+p{
+    margin: 20px;
+}
+label, input,textarea, p, h1, h4{
+    margin: 0px;
+    padding: 0px;
+    color: #352b2b;
+    font-family: 'Arial', 'Helvetica Neue', Helvetica, sans-serif;
+    line-height: 2;
+    text-decoration: none;
+}
+
+h1{
+    font-weight: 800;
+}
+
+body {
+    background-image: url(../img/lightveneer.png);
+}
+.head{
+    background-color: lightgray;
+    margin-bottom: 50px;
+}
+.heading, .searchHistory{
+    display: flex;
+}
+.mainHeading, .searchItem{
+    margin: auto;
+}
+
+.searchSection{
+    background-color: lightgray;lightgray;
+    padding: 10px;  
+    border-radius: 25px;
+}
+
+.searchContainer{
+    margin-bottom: 0.5rem!important;
+}
+
+
+
+
+.displaySection{
+    background-color: lightgray;
+    padding: 10px;  
+    border-radius: 25px;
+}
+
+.currentWeather{
+    margin: 50px;
+}
+.mainForcastDiv{
+    margin: 50px 5px;
+}
+
+@media(min-width: 560px){
+    .forcastDiv{
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+    }
+}
+
+.forcastDateDiv{    
+    border-radius: 20px;
+    background-color: lightskyblue;
+    margin: 10px auto;
+    width: 130px !important;
+}
+
+img{
+    margin: 10px auto;
+    display: block;
+}
