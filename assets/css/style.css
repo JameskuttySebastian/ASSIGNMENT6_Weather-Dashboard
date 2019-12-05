@@ -21,7 +21,7 @@ body {
     background-color: lightgray;
     margin-bottom: 50px;
 }
-.heading, .searchHistory{
+.heading {
     display: flex;
 }
 .mainHeading, .searchItem{
@@ -29,17 +29,24 @@ body {
 }
 
 .searchSection{
-    background-color: lightgray;lightgray;
+    background-color: lightgray;
     padding: 10px;  
     border-radius: 25px;
 }
 
 .searchContainer{
     margin-bottom: 0.5rem!important;
+    /* max-width: 350px;*/
+} 
+
+/* .searchHistory > p{
+    display: flex;    
+}  */
+
+.searchSection{
+    max-width: 350px;
+    margin: 10px auto;
 }
-
-
-
 
 .displaySection{
     background-color: lightgray;
@@ -52,6 +59,9 @@ body {
 }
 .mainForcastDiv{
     margin: 50px 5px;
+}
+.weatherInfo{
+    padding: 10px;
 }
 
 @media(min-width: 560px){
@@ -66,7 +76,7 @@ body {
     border-radius: 20px;
     background-color: lightskyblue;
     margin: 10px auto;
-    width: 130px !important;
+    min-width: 130px !important;
 }
 
 img{
