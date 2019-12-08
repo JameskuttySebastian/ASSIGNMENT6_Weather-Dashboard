@@ -28,30 +28,57 @@ $(document).ready(function () {
 
             var myStatus = response.cod;
             if (myStatus == 200) {
-
-                var name = response.name;
-                var utiDatetime = response.dt;
-                var iconcode = response.weather[0].icon;
-                var iconurl = "http://openweathermap.org/img/w/" + iconcode + ".png";
-                var date = moment.unix(utiDatetime).format("MM/DD/YYYY HH:mmA");
-                var temperature = response.main.temp;
-                var humidity = response.main.humidity;
-                var windSpeed = response.wind.speed;
+                renderCurrentWeather(response);
                 var lon = response.coord.lon;
                 var lat = response.coord.lat;
-
-
-
-
-                
                 getUVIndex(lat, lon);
-
-
+            }
+            else if (myStatus != 200) {
+                var mainHeading = $("<h2>");
+                mainHeading.text("City not found....")
+                $(".currentWeather").append(mainHeading);
             }
         })
     }
 
+    function renderCurrentWeather(response) {
+        // append name of the city
+        var utiDatetime = response.dt;
+        var dateTm = moment.unix(utiDatetime).format("MM/DD/YYYY hh:mm a");
+        // append name of the city
+        var mainHeading = $("<h2>").text(response.name + "( " + dateTm + " )");
+        mainHeading.attr("class", "currentWeather");
+        mainHeading.attr("id", "currentWeather-main");
+        //include the icon
+        var iconcode = response.weather[0].icon;
+        var iconurl = "http://openweathermap.org/img/w/" + iconcode + ".png";
+        var imageIcon = $("<img>");
+        imageIcon.attr("src", iconurl)
+        imageIcon.attr("style", "display: inline;")
+        mainHeading.append(imageIcon);
+        
+        $(".currentWeather").append(mainHeading);
+
+
+        // // <h2 class="currentWeather" id="currentWeather-main"><span id="currentWeather-name"></span></h2>
+        // $("#currentWeather-name").text(response.name);
+        // // <h4 class="currentWeather"><span id="currentWeather-datetm"></span>
+        // //     <span><img class="currentWeather" id="currentWeather-iconurl"src="" alt="No image!..."></span></h4>
+
+
+        // var iconcode = response.weather[0].icon;
+        // var iconurl = "http://openweathermap.org/img/w/" + iconcode + ".png";
+        // $("#currentWeather-iconurl").attr("src", iconurl);
+        // var temperatureTag = $("<p>").text("Temperature : " + response.main.temp)
+        // $(".currentWeather").append(temperatureTag);
+        // var humidity = $("<p>").text(response.main.humidity);
+        // $(".currentWeather").append("Humidity : " + humidity);
+        // var windSpeed = $("<p>").text(response.wind.speed);
+        // $(".currentWeather").append("Wind Speed : " + windSpeed);
+    }
+
     function getUVIndex(lat, lon) {
+        console.log(response);
         // http://api.openweathermap.org/data/2.5/uvi?appid={appid}&lat={lat}&lon={lon}
         var key = "appid=ed08a362d4cb8955e89ed3cacd336637";
         var location = "&lat=" + lat + "&lon=" + lon;
@@ -61,8 +88,8 @@ $(document).ready(function () {
             url: urlUVIndex,
             method: "GET"
         }).then(function (response) {
-            var uvIndex = response.value;
-
+            var uvIndex = $("<p>").text(response.value);
+            $(".currentWeather").append(uvIndex);
         })
     }
 
@@ -86,19 +113,34 @@ $(document).ready(function () {
         for (var i = 0; i < searchList.length; i++) {
             createSearchHistory(searchList[i]);
         }
+        //re-attach search click function
+        $(".searchTag").click(function () {
+            var currentSearch = this.children[0].children[0].textContent;
+            // console.log(currentSearch);
+            $('#inputCity').val(currentSearch);
+            event.preventDefault();
+            $("#buttonSearch").click();
+            // console.log("clicked");
+        })
     }
 
     // Create search history with each item dynamically created
     function createSearchHistory(searchItem) {
+        var atag = $("<a>");
+        atag.addClass("searchTag");
+        $(".searchedItem").append(atag);
         var searchContainer = $("<div>");
         searchContainer.addClass("p-1 bg-light rounded rounded-pill shadow-sm mb-4 searchContainer");
-        $(".searchedItem").append(searchContainer);
+        atag.append(searchContainer);
         var searchHistory = $("<div>");
         searchHistory.addClass("searchHistory");
         var searchItemTag = $("<p>");
+        atag.addClass("searchValue");
         searchItemTag.text(searchItem);
         searchHistory.append(searchItemTag);
         searchContainer.append(searchHistory);
+
+
         return ("");
     }
     // main search history div creation
@@ -119,6 +161,17 @@ $(document).ready(function () {
         populateSearchHistory();
     }
 
+
+
+    // this is for enter function
+    $(function () { // this will be called when the DOM is ready
+        $('#inputCity').keyup(function () {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                $("#buttonSearch").click();
+            };
+        });
+    });
 
     $("#buttonSearch").click(function () {
         var inputCity = $("#inputCity").val();
@@ -150,10 +203,6 @@ $(document).ready(function () {
             // var dateString = moment.unix("1575514614").format("MM/DD/YYYY HH:mmA");
 
             // console.log(dateString);
-
-
-
-
 
             // deleting search history which is more than last 8 searchs
             if (searchList.length > 8) {
