@@ -32,6 +32,7 @@ $(document).ready(function () {
                 var lon = response.coord.lon;
                 var lat = response.coord.lat;
                 getUVIndex(lat, lon);
+
             }
             else if (myStatus != 200) {
                 var mainHeading = $("<h2>");
@@ -42,12 +43,12 @@ $(document).ready(function () {
     }
 
     function renderCurrentWeather(response) {
+        $(".currentWeather").empty();
         // append name of the city
         var utiDatetime = response.dt;
         var dateTm = moment.unix(utiDatetime).format("MM/DD/YYYY hh:mm a");
         // append name of the city
         var mainHeading = $("<h2>").text(response.name + "( " + dateTm + " )");
-        mainHeading.attr("class", "currentWeather");
         mainHeading.attr("id", "currentWeather-main");
         //include the icon
         var iconcode = response.weather[0].icon;
@@ -56,29 +57,19 @@ $(document).ready(function () {
         imageIcon.attr("src", iconurl)
         imageIcon.attr("style", "display: inline;")
         mainHeading.append(imageIcon);
-        
-        $(".currentWeather").append(mainHeading);
+        $(".currentWeather").append(mainHeading); // for showing near to date
 
+        var temperatureTag = $("<p>").text("Temperature : " + response.main.temp);
+        $(".currentWeather").append(temperatureTag);
 
-        // // <h2 class="currentWeather" id="currentWeather-main"><span id="currentWeather-name"></span></h2>
-        // $("#currentWeather-name").text(response.name);
-        // // <h4 class="currentWeather"><span id="currentWeather-datetm"></span>
-        // //     <span><img class="currentWeather" id="currentWeather-iconurl"src="" alt="No image!..."></span></h4>
+        var humidityVal = $("<p>").text("Humidity : " + response.main.humidity);
+        $(".currentWeather").append(humidityVal);
 
-
-        // var iconcode = response.weather[0].icon;
-        // var iconurl = "http://openweathermap.org/img/w/" + iconcode + ".png";
-        // $("#currentWeather-iconurl").attr("src", iconurl);
-        // var temperatureTag = $("<p>").text("Temperature : " + response.main.temp)
-        // $(".currentWeather").append(temperatureTag);
-        // var humidity = $("<p>").text(response.main.humidity);
-        // $(".currentWeather").append("Humidity : " + humidity);
-        // var windSpeed = $("<p>").text(response.wind.speed);
-        // $(".currentWeather").append("Wind Speed : " + windSpeed);
+        var windSpeed = $("<p>").text("Wind Speed : " + response.wind.speed + " kms.");
+        $(".currentWeather").append(windSpeed);
     }
 
     function getUVIndex(lat, lon) {
-        console.log(response);
         // http://api.openweathermap.org/data/2.5/uvi?appid={appid}&lat={lat}&lon={lon}
         var key = "appid=ed08a362d4cb8955e89ed3cacd336637";
         var location = "&lat=" + lat + "&lon=" + lon;
@@ -88,8 +79,38 @@ $(document).ready(function () {
             url: urlUVIndex,
             method: "GET"
         }).then(function (response) {
-            var uvIndex = $("<p>").text(response.value);
-            $(".currentWeather").append(uvIndex);
+            uvIndex =  response.value;
+            colour = "";
+            if (uvIndex != "") {                
+                
+                if(uvIndex <= 2){
+                    color = "green";
+                }
+                else if(uvIndex <= 5){
+                    color = "yellow";
+                }
+                else if(uvIndex <= 7){
+                    color = "orange";
+                }
+                else if(uvIndex <= 10){
+                    color = "red";
+                }
+                else if(uvIndex > 10){
+                    color = "violet";
+                }
+                var span = $("<span>").text(response.value);
+                span.attr("style", "background:"+color+"; padding: 10px;");
+                var uvIndex = $("<p>").text("UV Index :");
+                uvIndex.append(span)
+                var uvDiv =  $("<div>");                
+                uvDiv.append(uvIndex)
+                $(".currentWeather").append(uvDiv);
+            }
+            else if (myStatus ="") {
+                var uvIndex = $("<p>").text("UV Index is not available !...");
+                $(".currentWeather").append(uvIndex);
+            }
+            console.log("uvIndex finished"+uvIndex);
         })
     }
 
