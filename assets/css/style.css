@@ -1,7 +1,7 @@
 p{
     margin: 20px;
 }
-label, input,textarea, p, h1, h4{
+label, input,textarea, p, h1, h4, h5{
     margin: 0px;
     padding: 0px;
     color: #352b2b;
@@ -9,7 +9,9 @@ label, input,textarea, p, h1, h4{
     line-height: 2;
     text-decoration: none;
 }
-
+.forcastDiv p{
+    font-size: 14px;
+}
 h1{
     font-weight: 800;
 }
@@ -49,7 +51,7 @@ body {
 }
 
 .displaySection{
-    background-color: lightgray;
+    /* background-color: lightgray; */
     padding: 10px;  
     border-radius: 25px;
 }
@@ -76,10 +78,10 @@ body {
     border-radius: 20px;
     background-color: lightskyblue;
     margin: 10px auto;
-    width: 130px !important;
+    width: 150px !important;
 }
 
 img{
-    margin: 10px auto;
+    margin: 1px auto;
     display: block;
 }

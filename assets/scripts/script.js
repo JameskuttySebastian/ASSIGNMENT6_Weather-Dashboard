@@ -8,10 +8,14 @@ $(document).ready(function () {
         /************************************************* */
         // creating main div when object is present in local memory
         createSearchedItemDiv();
-        populateSearchHistory();
+        populateSearchHistory(searchList);
     }
 
 
+
+    //******************************************** */
+    //this part is for current weather
+    //******************************************** */
     //Search from searh box
     function currentWeatherSearch(city) {
         var searchURL = "https://api.openweathermap.org/data/2.5/weather?units=metric";
@@ -32,7 +36,7 @@ $(document).ready(function () {
                 getUVIndex(lat, lon);
 
             }
-            else if (myStatus != 200) {
+            else if (myStatus == 404) {
                 var mainHeading = $("<h2>");
                 mainHeading.text("City not found....")
                 $(".currentWeather").append(mainHeading);
@@ -41,6 +45,7 @@ $(document).ready(function () {
     }
 
     function renderCurrentWeather(response) {
+        // console.log("renderCurrentWeather called")
         $(".currentWeather").empty();
         // append name of the city
         var utiDatetime = response.dt;
@@ -57,15 +62,19 @@ $(document).ready(function () {
         mainHeading.append(imageIcon);
         $(".currentWeather").append(mainHeading); // for showing near to date
 
-        var temperatureTag = $("<p>").text("Temperature : " + response.main.temp);
+        var temperatureTag = $("<p>").html("Temperature : " + parseInt(response.main.temp)+"&#8451;");
         $(".currentWeather").append(temperatureTag);
 
-        var humidityVal = $("<p>").text("Humidity : " + response.main.humidity);
+        var humidityVal = $("<p>").html("Humidity : " + response.main.humidity + " %");
         $(".currentWeather").append(humidityVal);
 
-        var windSpeed = $("<p>").text("Wind Speed : " + response.wind.speed + " kms.");
+        var windSpeed = $("<p>").html("Wind Speed : " + response.wind.speed + " KMH.");
         $(".currentWeather").append(windSpeed);
     }
+
+    //******************************************** */
+    //this part is for current UV Index
+    //******************************************** */
 
     function getUVIndex(lat, lon) {
         // http://api.openweathermap.org/data/2.5/uvi?appid={appid}&lat={lat}&lon={lon}
@@ -77,42 +86,45 @@ $(document).ready(function () {
             url: urlUVIndex,
             method: "GET"
         }).then(function (response) {
-            uvIndex = response.value;
-            colour = "";
-            if (uvIndex != "") {
-
-                if (uvIndex <= 2) {
-                    color = "green";
-                }
-                else if (uvIndex <= 5) {
-                    color = "yellow";
-                }
-                else if (uvIndex <= 7) {
-                    color = "orange";
-                }
-                else if (uvIndex <= 10) {
-                    color = "red";
-                }
-                else if (uvIndex > 10) {
-                    color = "violet";
-                }
-                var span = $("<span>").text(response.value);
-                span.attr("style", "background:" + color + "; padding: 10px;");
-                var uvIndex = $("<p>").text("UV Index :");
-                uvIndex.append(span)
-                var uvDiv = $("<div>");
-                uvDiv.append(uvIndex)
-                $(".currentWeather").append(uvDiv);
-            }
-            else if (myStatus = "") {
-                var uvIndex = $("<p>").text("UV Index is not available !...");
-                $(".currentWeather").append(uvIndex);
-            }
-
+            renderUVIndex(response);
         })
     }
+    // find the limit colour and render UV index
+    function renderUVIndex(response) {
+        uvIndex = response.value;
+        colour = "";
+        if (uvIndex != "") {
 
+            if (uvIndex <= 2) {
+                color = "green";
+            }
+            else if (uvIndex <= 5) {
+                color = "yellow";
+            }
+            else if (uvIndex <= 7) {
+                color = "orange";
+            }
+            else if (uvIndex <= 10) {
+                color = "red";
+            }
+            else if (uvIndex > 10) {
+                color = "violet";
+            }
+            var span = $("<span>").text(parseInt(response.value));
+            span.attr("style", "background:" + color + "; padding: 10px;");
+            var uvIndex = $("<p>").text("UV Index :");
+            uvIndex.append(span)
+            var uvDiv = $("<div>");
+            uvDiv.append(uvIndex)
+            $(".currentWeather").append(uvDiv);
+        }
+        else if (myStatus = "") {
+            var uvIndex = $("<p>").text("UV Index is not available !...");
+            $(".currentWeather").append(uvIndex);
+        }
+    }
 
+    //API call to get forcast weather 
     function forcastWeatherSearch(inputCity) {
 
 
@@ -131,56 +143,11 @@ $(document).ready(function () {
             if (myStatus == 200) {
                 $("#forcastHeading").text("5-Day Forcast");
 
-                //extracting required data
-                var dataArray = response.list;
-                var dateArray = [];
+                var dateArray = getForcastData(response);
 
-                for (var i = 0; i < dataArray.length; i++) {
+                var forcastArray = getforcastArray(dateArray);
 
-                    var dataObject = {
-                        dt: "",
-                        time: "",
-                        index: 0,
-                        temp: 0,
-                        humidity: 0,
-                        daynight: "",
-                        icon: ""
-                    }
-
-                    dataObject.dt = moment.unix(dataArray[i].dt).format("DD/MM/YYYY");
-                    dataObject.time = moment.unix(dataArray[i].dt).format("hh:mm a");
-                    dataObject.index = i;
-                    dataObject.temp = dataArray[i].main.temp_max;
-                    dataObject.humidity = dataArray[i].main.humidity;
-                    dataObject.daynight = dataArray[i].sys.pod;
-                    dataObject.icon = dataArray[i].weather[0].icon;
-                    dateArray.push(dataObject);
-                }
-
-                console.log(JSON.stringify(dateArray));
-
-                //apliting array by dates
-
-
-                var requiredDateArray = [];
-                var selectedObj = dateArray[0];
-                for (var j = 0; j < dateArray.length - 1; j++) {
-                    if (dateArray[j].dt === dateArray[j + 1].dt) {
-                        if (parseFloat(dateArray[j].temp) < parseFloat(dateArray[j + 1].temp)) {
-                            selectedObj = dateArray[j + 1];
-                        }
-                        if (j+1 == dateArray.length - 1) {
-                            requiredDateArray.push(selectedObj);
-                        }
-                    }
-                    else {
-                        requiredDateArray.push(selectedObj);
-                        j++;
-                        selectedObj = dateArray[j];
-                    }
-                }
-                console.log(JSON.stringify(requiredDateArray));
-
+                displayForcast(forcastArray);
 
 
             }
@@ -191,8 +158,95 @@ $(document).ready(function () {
 
     }
 
+    // Get required data from forcast API Call
+    function getForcastData(response) {
+        //extracting required data
+        var dataArray = response.list;
+        var dateArray = [];
+
+        for (var i = 0; i < dataArray.length; i++) {
+
+            var dataObject = {
+                dt: "",
+                time: "",
+                index: 0,
+                temp: 0,
+                humidity: 0,
+                daynight: "",
+                icon: ""
+            }
+
+            dataObject.dt = moment.unix(dataArray[i].dt).format("DD/MM/YYYY");
+            dataObject.time = moment.unix(dataArray[i].dt).format("hh:mm a");
+            dataObject.index = i;
+            dataObject.temp = dataArray[i].main.temp_max;
+            dataObject.humidity = dataArray[i].main.humidity;
+            dataObject.daynight = dataArray[i].sys.pod;
+            dataObject.icon = dataArray[i].weather[0].icon;
+            dateArray.push(dataObject);
+        }
+
+        // console.log(JSON.stringify(dateArray));
+        return (dateArray);
+    }
+
+    //get filtered forcast data array to display
+    function getforcastArray(dateArray) {
+        //apliting array by dates
+        var requiredDateArray = [];
+        var selectedObj = dateArray[0];
+        for (var j = 0; j < dateArray.length - 1; j++) {
+            if (dateArray[j].dt === dateArray[j + 1].dt) {
+                if (parseFloat(dateArray[j].temp) < parseFloat(dateArray[j + 1].temp)) {
+                    selectedObj = dateArray[j + 1];
+                }
+                if (j + 1 == dateArray.length - 1) {
+                    requiredDateArray.push(selectedObj);
+                }
+            }
+            else {
+                requiredDateArray.push(selectedObj);
+                j++;
+                selectedObj = dateArray[j];
+            }
+        }
+        // console.log(JSON.stringify(requiredDateArray));
+        if (requiredDateArray.length > 5) {
+            requiredDateArray.splice(0, 1)
+        }
+        return (requiredDateArray);
+    }
+
+    //display forcast data
+    function displayForcast(forcastArray) {
+        // console.log(JSON.stringify(forcastArray));
+        $(".forcastDiv").empty();
+
+        for (var k = 0; k < forcastArray.length; k++){
+            var forcastDateDiv = $("<div>").addClass("forcastDateDiv");
+            var forcastDate = $("<h5>").html(forcastArray[k].dt);
+            forcastDate.attr("style", "text-align: center;padding: 10px;")
+            forcastDateDiv.append(forcastDate);
+            var weatherImgsDiv = $("<div>").addClass("weatherImgs");
+            var weatherImgs = $("<img>").attr("src", "http://openweathermap.org/img/w/"+forcastArray[k].icon+".png");
+            weatherImgsDiv.append(weatherImgs);
+            forcastDateDiv.append(weatherImgsDiv);
+            var weatherInfo = $("<div>").addClass("weatherInfo");
+            var pTemp = $("<p>").html("Temperature : "+parseInt(forcastArray[k].temp)+"&#8451;");
+            weatherInfo.append(pTemp);
+            var pHumidity = $("<p>").html("Humidity : "+parseInt(forcastArray[k].humidity)+"%");
+            weatherInfo.append(pHumidity);
+            forcastDateDiv.append(weatherInfo);
+            $(".forcastDiv").append(forcastDateDiv);
+        }
+    }
+
+
+    //******************************************** */
+    //this part is for search history
+    //******************************************** */
     // populate search history at the beginning and each new search
-    function populateSearchHistory() {
+    function populateSearchHistory(searchList) {
         for (var i = 0; i < searchList.length; i++) {
             createSearchHistory(searchList[i]);
         }
@@ -222,8 +276,6 @@ $(document).ready(function () {
         searchItemTag.text(searchItem);
         searchHistory.append(searchItemTag);
         searchContainer.append(searchHistory);
-
-
         return ("");
     }
     // main search history div creation
@@ -246,6 +298,7 @@ $(document).ready(function () {
         });
     });
 
+    //search event
     $("#buttonSearch").click(function () {
         var inputCity = $("#inputCity").val();
 
@@ -253,6 +306,7 @@ $(document).ready(function () {
         if (inputCity != "") {
             // clearing history display
             $(".searchedItem").empty();
+            $(".displaySection").attr("style", "background: lightgray; margin: 20px auto;");
             // console.log(searchList);
             if (searchList === null || searchList.length == 0) {
                 /************************************************* */
@@ -271,14 +325,9 @@ $(document).ready(function () {
 
             //calling the AJAX method to get weather infor for current weather
 
-            // currentWeatherSearch(inputCity);
+            currentWeatherSearch(inputCity);
             forcastWeatherSearch(inputCity);
 
-
-
-            // var dateString = moment.unix("1575514614").format("MM/DD/YYYY HH:mmA");
-
-            // console.log(dateString);
 
             // deleting search history which is more than last 8 searchs
             if (searchList.length > 8) {
@@ -288,13 +337,8 @@ $(document).ready(function () {
             // saving the array to local storage
             localStorage.setItem("searchList", JSON.stringify(searchList));
             // populating searh history after changing array
-            populateSearchHistory();
+            populateSearchHistory(searchList);
 
         }
     })
-
-
-
-
-
 })
