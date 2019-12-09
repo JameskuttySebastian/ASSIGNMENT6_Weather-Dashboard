@@ -1,3 +1,27 @@
+//********************************************************* */
+// var splitByDateArray = [];
+// var currentDateArray = [];
+
+// for (var j = 1; j < dateArray.length; j++) {
+//     if (currentDateArray.length == 0) {
+//         currentDateArray.push(dateArray[j - 1]);
+//     }
+//     if (dateArray[j - 1].dt === dateArray[j].dt) {
+//         currentDateArray.push(dateArray[j]);
+//         if (j == dateArray.length - 1) {
+//             splitByDateArray.push(currentDateArray);
+//             currentDateArray = [];
+//         }
+//     }
+//     else {
+//         splitByDateArray.push(currentDateArray);
+//         currentDateArray = [];
+//     }
+// }
+
+
+// console.log(JSON.stringify(splitByDateArray));
+//*****************************************************************
 $(document).ready(function () {
 
     // main history list variable
@@ -169,7 +193,7 @@ $(document).ready(function () {
                         if (parseFloat(dateArray[j].temp) < parseFloat(dateArray[j + 1].temp)) {
                             selectedObj = dateArray[j + 1];
                         }
-                        if (j+1 == dateArray.length - 1) {
+                        if (j + 1 == dateArray.length - 1) {
                             requiredDateArray.push(selectedObj);
                         }
                     }
