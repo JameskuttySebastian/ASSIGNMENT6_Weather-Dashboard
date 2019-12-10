@@ -80,7 +80,7 @@ $(document).ready(function () {
         // http://api.openweathermap.org/data/2.5/uvi?appid={appid}&lat={lat}&lon={lon}
         var key = "appid=ed08a362d4cb8955e89ed3cacd336637";
         var location = "&lat=" + lat + "&lon=" + lon;
-        var urlUVIndex = "http://api.openweathermap.org/data/2.5/uvi?" + key + location;
+        var urlUVIndex = "https://api.openweathermap.org/data/2.5/uvi?" + key + location;
 
         $.ajax({
             url: urlUVIndex,
@@ -228,7 +228,7 @@ $(document).ready(function () {
             forcastDate.attr("style", "text-align: center;padding: 10px;")
             forcastDateDiv.append(forcastDate);
             var weatherImgsDiv = $("<div>").addClass("weatherImgs");
-            var weatherImgs = $("<img>").attr("src", "http://openweathermap.org/img/w/"+forcastArray[k].icon+".png");
+            var weatherImgs = $("<img>").attr("src", "https://openweathermap.org/img/w/"+forcastArray[k].icon+".png");
             weatherImgsDiv.append(weatherImgs);
             forcastDateDiv.append(weatherImgsDiv);
             var weatherInfo = $("<div>").addClass("weatherInfo");
