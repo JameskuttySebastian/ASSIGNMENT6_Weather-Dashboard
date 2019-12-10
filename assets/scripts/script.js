@@ -55,7 +55,7 @@ $(document).ready(function () {
         mainHeading.attr("id", "currentWeather-main");
         //include the icon
         var iconcode = response.weather[0].icon;
-        var iconurl = "http://openweathermap.org/img/w/" + iconcode + ".png";
+        var iconurl = "https://openweathermap.org/img/w/" + iconcode + ".png";
         var imageIcon = $("<img>");
         imageIcon.attr("src", iconurl)
         imageIcon.attr("style", "display: inline;")
