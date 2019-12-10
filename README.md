@@ -17,5 +17,5 @@
 2. Application will show the following
 *  History of search, upon click on it will search for that city
 *  Current Weather for city including the UV Index
-*  Weather forcast for next 5 days, with maximum temperature
+*  Weather forcast for next 5 days, with temperature, humidity and weather.
 
